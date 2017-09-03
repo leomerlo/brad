@@ -2,7 +2,7 @@
 
 	session_destroy();
 
-	$response = array('Te esperamos de vuelta!');
+	$response['status'] = 0;
 
 	send($response);
 

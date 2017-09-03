@@ -1,219 +1,70 @@
 <?php
 
-	// TODO: Generar la clave de usuario
-
 	class user {
-		var $user;
 
 		function create($user_data){
 
-			$this->user = R::dispense('user');
+			$user = R::dispense('user');
 
-			$this->user->username 	= $user_data['username'];
-			$this->user->phone 		= $user_data['phone'];
-			//$this->user->userimg 	= $user_data['user_img'];
-			$this->user->active 	= '1';
-			// Clave de usuario
-			$this->user->code 		= '12634';
+			$user->username 	= $user_data['username'];
+			$user->password 	= sha1($user_data['password']);
+			$user->nombre 		= $user_data['nombre'];
+			$user->type 		= 1;
+			$user->active 		= 1;
 
-			$this->user->id = R::store($this->user);
+			$user->id = R::store($user);
 
-			return 'Usuario Creado con extio!';
+			return $user->id;
 
 		}
 
-		function login($phone,$code){
+		function login($username,$password){
 
-			$this->user = R::getRow('SELECT id,username FROM user WHERE phone = ? AND code = ? limit 1',array($phone,$code));
+			$this->data = R::getRow('SELECT id FROM user WHERE username = ? AND password = ? AND active = 1 limit 1',array($username,sha1($password)));
 
-			return $this->user;
+			return $this->data;
 
 		}
 
 		function load($uid){
 
-			$this->user = R::load('user', $uid);
+			$this->data = R::load('user', $uid);
 
 		}
 
 		function edit($user_data){
-			$this->user->username = $user_data['username'];
+			if(isset($user_data['username']) && $user_data['username'] != '') {
+				$this->data->username = $user_data['username'];
+			}
+			
+			if(isset($user_data['password']) && $user_data['password'] != '') {
+				$this->data->password = $user_data['password'];
+			}
 
-			R::store($this->user);
+			if(isset($user_data['nombre']) && $user_data['nombre'] != '') {
+				$this->data->nombre = $user_data['nombre'];
+			}
 
-			return 'Usuario editado';
+			if(isset($user_data['type']) && $user_data['type'] != '') {
+				$this->data->type = $user_data['type'];
+			}
+
+			if(isset($user_data['active']) && $user_data['active'] != '') {
+				$this->data->active = $user_data['active'];
+			}
+
+			R::store($this->data);
+
+			return true;
 		}
 
 		function delete(){
-			$this->user->active = 0;
+			$this->data->active = 0;
 
-			R::store($this->user);
+			R::store($this->data);
 
-			return 'Usuario desactivado';
+			return true;
 		}
 
-		function getMyInfo($whatInfo = []){
-
-			$user_info = [];
-
-			foreach($this->user as $key => $value) {
-				if(count($whatInfo) > 0){
-					if(in_array($key, $whatInfo)){
-						$user_info[$key] = $value;
-					}
-				} else {
-					$user_info[$key] = $value;
-				}
-	    	}
-			
-			return $user_info;
-
-		}
-
-		function uploadAvatar($file){
-
-			move_uploaded_file($file["tmp_name"],"images/temp/".$file['name']);
-			
-			$output = "images/user/user_".$this->user->id.".jpg";
-			$output_th = "images/user/thumbs/user_".$this->user->id.".jpg";
-
-			$th_width = 50;
-			$th_height = 50;
-
-			$width = 200;
-			$height = 200;
-
-			$url = "images/temp/".$file['name'];
-
-			$this->thumbGen($url,$file['type'],$output_th,$th_width,$th_height,60);
-			$this->thumbGen($url,$file['type'],$output,$width,$height);
-
-			unlink("images/temp/".$file['name']);
-
-			R::store($this->user);
-
-		}
-
-		function thumbGen($url,$type,$output,$width,$height,$q = 100){
-
-			$original = '';
-
-			if ($type == 'image/png' || $type == 'png') {
-				$original = imagecreatefrompng($url);
-			}
-
-			if ($type == 'image/jpeg' || $type == 'jpg' || $type == 'jpeg') {
-				$original = imagecreatefromjpeg($url);
-			}
-
-			if ($type == 'image/gif' || $type == 'gif') {
-				$original = imagecreatefromgif($url);
-			}
-
-			list($width_orig, $height_orig) = getimagesize($url);
-
-			$ratio_orig = $width_orig/$height_orig;
-
-			if ($width/$height < $ratio_orig) {
-			   $width = $height*$ratio_orig;
-			} else {
-			   $height = $width/$ratio_orig;
-			}
-
-			$image = imagecreatetruecolor($width, $height);
-
-			imagecopyresampled($image, $original, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
-
-			imagejpeg($image, $output, 100);
-
-		}
-
-		function joinTrip($tid){
-
-			$trip = R::load('trip', $tid);
-
-			$user_attrs = array(
-				"user_id"		=>$this->user->id,
-				"user_admin"	=> 0
-			);
-
-			$trip->link('trip_tripper',$user_attrs)->user = $this->user;
-
-			R::store($trip);
-
-			return 'Se agregó al usuario '.$this->user->username.' al trip "'.$trip->name.'"';
-		}
-
-		function leaveTrip($tid){
-
-			$trip 		= R::load('trip', $tid);
-			$users 		= $trip->via('trip_tripper')->sharedUser;
-
-			$user_pos = '';
-
-			foreach($users as $key => $user){
-				if($this->user->id == $user->id){
-					$user_pos = $key;
-				}
-			}
-
-			if($user_pos == '') {
-				
-				return 'El usuario no se encuenta en este Trip';
-
-			} else {
-
-				unset($trip->via('trip_tripper')->sharedUser[$user_pos]); 
-
-				R::store($trip);
-
-				return 'Se eliminó al usuario '.$this->user->username.' del trip "'.$trip->name.'"';
-
-			}
-
-		}
-
-		function myTrips(){
-
-			$rawTrips = $this->user->via('trip_tripper')->sharedTrip;
-			$myTrips = [];
-
-			foreach($rawTrips as $trip){
-				$rawTrip = new trip();
-				$rawTrip->load($trip->id);
-
-				//if($rawTrip->trip->active == 1){
-					$trip = array(
-						'name' => $rawTrip->trip->name,
-						'active' => $rawTrip->trip->active
-					);
-				//}
-
-				$myTrips[] = $trip;
-			}
-
-			return $myTrips;
-
-		}
-
-		function setState($state){
-
-			$this->user->state = $state;
-
-			R::store($this->user);
-
-			return 'Estado actualizado';
-
-		}
-
-		function updatePos($pos){
-			
-			$this->user->pos = $pos;
-
-			R::store($this->user);
-
-			return 'Posición actualizada';
-
-		}
 	}
 ?>

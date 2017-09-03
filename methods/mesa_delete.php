@@ -2,10 +2,10 @@
 
 	$user = new user();
 
-	if($muid == 1 && isset($_POST['uid'])){
+	if($sUser->data->type == 0 && isset($_POST['uid'])){
 		$uid = $_POST['uid'];
 	} else {
-		$uid = $muid;
+		$uid = $sUser->data->id;
 	}
 
 	$user->load($uid);
@@ -14,5 +14,9 @@
 	$response['status'] = 0;
 
 	send($response);
+
+	if($sUser->data->id == $user->data->id){
+		session_destroy();
+	}
 
 ?>
