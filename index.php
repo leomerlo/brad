@@ -5,6 +5,8 @@
 	R::setup('mysql:host=localhost;dbname=brad','root','');
 
 	include_once('classes/user.php');
+	include_once('classes/mesa.php');
+	include_once('classes/reserva.php');
 
 	session_start();
 
@@ -67,6 +69,40 @@
 			$include = 'mesa_edit';
 			break;
 
+		// RESERVA
+			// CHECKED
+		case 'reserva_create':
+			$include = 'reserva_create';
+			break;
+			// CHECKED
+		case 'reserva_delete':
+			$include = 'reserva_delete';
+			break;
+			// CHECKED
+		case 'reserva_edit':
+			$include = 'reserva_edit';
+			break;
+			// CHECKED
+		case 'reservas':
+			$include = 'reserva';
+			break;
+
+		// BLOQUEO
+		case 'bloqueo_dia':
+			$include = 'bloqueo_dia';
+			break;
+
+		case 'desbloqueo_dia':
+			$include = 'desbloqueo_dia';
+			break;
+
+		case 'bloqueo_hora':
+			$include = 'bloqueo_hora';
+			break;
+
+		case 'desbloqueo_hora':
+			$include = 'desbloqueo_hora';
+			break;
 		
 		// AUTH
 			// CHECKED
@@ -78,9 +114,13 @@
 			$include = 'logout';
 			break;
 
+		case 'man':
+			$include = 'apiHelp';
+			break;
+
 		// HELP
 		default:
-			$include = 'apiHelp';
+			$include = 'debug';
 			break;
 	}
 

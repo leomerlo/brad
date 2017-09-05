@@ -2,7 +2,7 @@
 
 	$mesa = new mesa();
 
-	if(!isset($_POST['numero']) || !isset($_POST['tipo'])){
+	if(!isset($_POST['numero']) || !isset($_POST['pax'])){
 		$errors[] = '1';
 	}
 
@@ -15,7 +15,8 @@
 	$data = [];
 
 	$data['numero'] 		= $_POST['numero'];
-	$data['tipo'] 			= $_POST['tipo'];
+	$data['pax'] 			= $_POST['pax'];
+	$data['tipo'] 			= isset($_POST['tipo']) ? $_POST['tipo'] : '1';
 
 	$response['data']['info'] 	= $mesa->create($data);
 	$response['status'] = 0;

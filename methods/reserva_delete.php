@@ -1,20 +1,20 @@
 <?php
 
-	$mesa = new mesa();
+	$reserva = new reserva();
 
-	if(!isset($_POST['mid'])){
+	if(!isset($_POST['rid'])){
 		$errors[] = '1';
 	} else {
-		$mid = $_POST['mid'];
+		$rid = $_POST['rid'];
 	}
 
 	if($sUser->data->type != 0){
 		$errors[] = '3';	
 	}
 
-	$mesa->load($mid);
+	$reserva->load($rid);
 
-	$response['data'] 	= $mesa->delete();
+	$response['data'] 	= $reserva->delete();
 	$response['status'] = 0;
 
 	send($response);

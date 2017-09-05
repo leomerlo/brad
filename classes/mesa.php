@@ -7,6 +7,7 @@
 			$mesa = R::dispense('mesa');
 
 			$mesa->numero 	= $data['numero'];
+			$mesa->pax 		= $data['pax'];
 			$mesa->tipo 	= $data['tipo'];
 			$mesa->active 	= 1;
 
@@ -24,7 +25,11 @@
 
 		function edit($data){
 			if(isset($data['numero']) && $data['numero'] != '') {
-				$this->data->numero = $mesa_data['numero'];
+				$this->data->numero = $data['numero'];
+			}
+
+			if(isset($data['pax']) && $data['pax'] != '') {
+				$this->data->pax = $data['pax'];
 			}
 			
 			if(isset($data['tipo']) && $data['tipo'] != '') {
