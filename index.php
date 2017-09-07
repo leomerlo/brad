@@ -7,6 +7,7 @@
 	include_once('classes/user.php');
 	include_once('classes/mesa.php');
 	include_once('classes/reserva.php');
+	include_once('classes/bloqueo.php');
 
 	session_start();
 
@@ -18,7 +19,7 @@
 		$sUser->load($_SESSION['uid']);
 	} else {
 		if(isset($_GET['q']) && $_GET['q'] != 'login'){
-			$errors[] = 'Tenés que iniciar sesión';
+			$errors[] = '2';
 		}
 	}
 
@@ -28,13 +29,35 @@
 
 	function checkForErrors($errors,$error = 1){
 		if(count($errors) != 0){
-			$response['data']['error'] 	= $errors;
+			foreach ($errors as $id) {
+				$response['data']['errors']['id'] = $id;
+			}
+
 			$response['status'] = $error;
 
 			send($response);
 
 			die();		
 		}
+	}
+
+	function checkBloqueo($dia,$hora = '*'){
+
+		$bloqueo = new bloqueo();
+
+		if($dia){
+			$data['dia'] 			= $dia;
+			$data['hora'] 			= $hora;
+		}
+
+		$resultado = count($bloqueo->getAll($data));
+
+		if($resultado > 0){
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 	$q = (isset($_GET['q']) ? $_GET['q'] : 'help');
@@ -88,20 +111,19 @@
 			break;
 
 		// BLOQUEO
-		case 'bloqueo_dia':
-			$include = 'bloqueo_dia';
+		case 'bloqueo':
+			$action = 'bloqueo';
+			$include = 'bloqueo';
 			break;
 
-		case 'desbloqueo_dia':
-			$include = 'desbloqueo_dia';
+		case 'desbloqueo':
+			$action = 'desbloqueo';
+			$include = 'bloqueo';
 			break;
 
-		case 'bloqueo_hora':
-			$include = 'bloqueo_hora';
-			break;
-
-		case 'desbloqueo_hora':
-			$include = 'desbloqueo_hora';
+		case 'bloqueos':
+			$action = 'get';
+			$include = 'bloqueo';
 			break;
 		
 		// AUTH

@@ -99,6 +99,7 @@
 					$temp['id'] 			= $reserva->id;
 					$temp['nombre'] 		= $reserva->nombre;
 					$temp['apellido'] 		= $reserva->apellido;
+					$temp['pax'] 			= $reserva->pax;
 					$temp['dia'] 			= $reserva->dia;
 					$temp['hora'] 			= $reserva->hora;
 					$temp['telefono'] 		= $reserva->telefono;
@@ -108,7 +109,7 @@
 						$temp['mesa'][] = $mesa->numero;
 					}
 
-					$reservas['dia'] = $temp;
+					$reservas['hoy'][] = $temp;
 				}
 			}
 
@@ -120,12 +121,13 @@
 				$temp['id'] 			= $reserva->id;
 				$temp['nombre'] 		= $reserva->nombre;
 				$temp['apellido'] 		= $reserva->apellido;
+				$temp['pax'] 			= $reserva->pax;
 				$temp['dia'] 			= $reserva->dia;
 				$temp['hora'] 			= $reserva->hora;
 				$temp['telefono'] 		= $reserva->telefono;
 				$temp['observaciones'] 	= $reserva->hora;
 
-				$reservas['pendientes'] = $temp;
+				$reservas['pendientes'][] = $temp;
 			}
 
 			return $reservas;

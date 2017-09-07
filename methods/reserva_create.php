@@ -10,6 +10,10 @@
 		$errors[] = '3';
 	}
 
+	if(checkBloqueo($_POST['dia'],$_POST['hora'])){
+		$errors[] = '4';
+	}
+
 	checkForErrors($errors);
 
 	$data = [];
@@ -21,7 +25,7 @@
 	$data['dia'] 			= $_POST['dia'];
 	$data['pax'] 			= $_POST['pax'];
 	$data['observaciones'] 	= isset($_POST['observaciones']) ? $_POST['observaciones'] : '';
-	$data['usuario'] 		= $sUser->id;
+	$data['usuario'] 		= $sUser->data->id;
 	if(isset($_POST['mesa'])){
 		$data['mesa'] 		= explode(',',$_POST['mesa']);	
 	}
